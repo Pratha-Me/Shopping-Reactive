@@ -1,5 +1,6 @@
 package com.online.shopping.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +13,12 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private SecurityContextRepository securityContextRepository;
+    private final SecurityContextRepository securityContextRepository;
 
     @Bean
     SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
