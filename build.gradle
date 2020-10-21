@@ -29,6 +29,7 @@ dependencies {
 //	implementation('javax.mail:javax.mail-api:1.6.2')
     
 	compile group: 'org.mongodb', name: 'mongodb-driver-sync', version: '4.1.0'
+	compile group: 'javax.persistence', name: 'persistence-api', version: '1.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

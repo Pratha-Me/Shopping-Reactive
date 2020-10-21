@@ -24,6 +24,7 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> authRoute(){
         return RouterFunctions
-                .route(POST("/auth/login").and(accept(MediaType.APPLICATION_JSON)), authHandler::login);
+                .route(POST("/auth/login").and(accept(MediaType.APPLICATION_JSON)), authHandler::login)
+                .andRoute(POST("/auth/signup").and(accept(MediaType.APPLICATION_JSON)), authHandler::signUp);
     }
 }

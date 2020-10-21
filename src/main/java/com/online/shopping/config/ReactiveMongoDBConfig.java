@@ -33,6 +33,6 @@ public class ReactiveMongoDBConfig extends AbstractMongoClientConfiguration {
 
     @Override
     protected Collection<String> getMappingBasePackages() {
-        return Collections.singleton("com.shopping.Webflux");
+        return Collections.singleton("com.online.shopping");
     }
 }

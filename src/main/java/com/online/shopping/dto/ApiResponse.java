@@ -1,4 +1,4 @@
-package com.devglan.springwebfluxjwt.dto;
+package com.online.shopping.dto;
 
 public class ApiResponse {
 
