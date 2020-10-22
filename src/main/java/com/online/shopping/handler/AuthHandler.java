@@ -2,6 +2,7 @@ package com.online.shopping.handler;
 
 import com.online.shopping.dto.ApiResponse;
 import com.online.shopping.dto.AuthUserLoginDto;
+import com.online.shopping.dto.AuthUserOtpDto;
 import com.online.shopping.model.auth.AuthUser;
 import com.online.shopping.model.auth.Role;
 import com.online.shopping.model.auth.Status;
@@ -33,8 +34,8 @@ public class AuthHandler {
     private final AuthRepository authRepository;
 
     public Mono<ServerResponse> login(ServerRequest request) {
-        Mono<AuthUserLoginDto> authUserDtoMono = request.bodyToMono(AuthUserLoginDto.class);
-        return authUserDtoMono.flatMap(authUserLoginDto -> authRepository.findByEmail(authUserLoginDto.getEmail())
+        Mono<AuthUserLoginDto> userLoginDto = request.bodyToMono(AuthUserLoginDto.class);
+        return userLoginDto.flatMap(authUserLoginDto -> authRepository.findByEmail(authUserLoginDto.getEmail())
                 .flatMap(authUser -> {
                     if (bCryptPasswordEncoder.matches(authUserLoginDto.getPassword(), authUser.getPassword())){
                         return ServerResponse
@@ -60,6 +61,7 @@ public class AuthHandler {
                     .setStatus(Status.NOT_VERIFIED)
                     .setOtp(com.karyathalo.pudo.util.StringUtils.generateOtp())
                     .setUserId(com.karyathalo.pudo.util.StringUtils.getRandomUserId())
+                    .setOtpDate(new Date())
                     .setJoinedDate(new Date());
             return authUser;
         }).flatMap(authUser -> authRepository.findByEmail(authUser.getEmail())
@@ -70,5 +72,19 @@ public class AuthHandler {
                         .flatMap(savedUser -> ServerResponse.status(HttpStatus.CREATED)
                                 .contentType(APPLICATION_JSON)
                                 .body(BodyInserters.fromValue(savedUser)))));
+    }
+
+    public Mono<ServerResponse> verify(ServerRequest request) {
+        Mono<AuthUserOtpDto> dtoMono = request.bodyToMono(AuthUserOtpDto.class);
+        return dtoMono.flatMap(dto -> authRepository.findByEmail(dto.getEmail())
+                .flatMap(authUser -> {
+                    authUser.setStatus(Status.VERIFIED)
+                            .setOtp(null)
+                            .setOtpDate(null);
+                    return ServerResponse.ok()
+                            .body(BodyInserters.fromValue( new ApiResponse(200, "Verified", null)));
+                })
+                .switchIfEmpty(ServerResponse.badRequest()
+                        .body(BodyInserters.fromValue(new ApiResponse(400, "User does not exist", null)))));
     }
 }
