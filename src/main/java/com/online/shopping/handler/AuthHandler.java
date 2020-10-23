@@ -9,6 +9,7 @@ import com.online.shopping.model.auth.Status;
 import com.online.shopping.repository.AuthRepository;
 import com.online.shopping.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +33,8 @@ public class AuthHandler {
     private final TokenProvider tokenProvider;
 
     private final AuthRepository authRepository;
+
+    private final ReactiveMongoTemplate mongoTemplate;
 
     public Mono<ServerResponse> login(ServerRequest request) {
         Mono<AuthUserLoginDto> userLoginDto = request.bodyToMono(AuthUserLoginDto.class);
@@ -71,16 +74,22 @@ public class AuthHandler {
                 .switchIfEmpty(authRepository.save(authUser)
                         .flatMap(savedUser -> ServerResponse.status(HttpStatus.CREATED)
                                 .contentType(APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(savedUser)))));
+                                .body(BodyInserters.fromValue(new ApiResponse(201, "User is created", null))))));
     }
 
     public Mono<ServerResponse> verify(ServerRequest request) {
         Mono<AuthUserOtpDto> dtoMono = request.bodyToMono(AuthUserOtpDto.class);
         return dtoMono.flatMap(dto -> authRepository.findByEmail(dto.getEmail())
                 .flatMap(authUser -> {
-                    authUser.setStatus(Status.VERIFIED)
-                            .setOtp(null)
-                            .setOtpDate(null);
+                    if (dto.getOtp().equals(authUser.getOtp())){
+                        authUser.setStatus(Status.VERIFIED)
+                                .setOtp(null)
+                                .setOtpDate(null);
+                        mongoTemplate.save(authUser);
+                    } else {
+                        System.out.println("Error is caught, now it needs to be thrown and handled aptly");
+                        Mono.error(RuntimeException::new);
+                    }
                     return ServerResponse.ok()
                             .body(BodyInserters.fromValue( new ApiResponse(200, "Verified", null)));
                 })

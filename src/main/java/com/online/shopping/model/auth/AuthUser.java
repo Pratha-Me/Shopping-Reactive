@@ -1,6 +1,7 @@
 package com.online.shopping.model.auth;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 @Document(collection = "auth_user")
 public class AuthUser {
 

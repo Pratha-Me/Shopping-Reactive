@@ -9,5 +9,5 @@ public class AuthUserOtpDto {
 
     private String email;
 
-    private String otp;
+    private Integer otp;
 }
