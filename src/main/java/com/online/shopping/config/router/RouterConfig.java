@@ -10,8 +10,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,6 +23,7 @@ public class RouterConfig {
         return RouterFunctions
                 .route(POST("/auth/login").and(accept(MediaType.APPLICATION_JSON)), authHandler::login)
                 .andRoute(POST("/auth/signup").and(accept(MediaType.APPLICATION_JSON)), authHandler::signUp)
-                .andRoute(POST("/auth/verify").and(accept(MediaType.APPLICATION_JSON)), authHandler::verify);
+                .andRoute(POST("/auth/verify").and(accept(MediaType.APPLICATION_JSON)), authHandler::verify)
+                .andRoute(GET("/auth/user"), authHandler::user);
     }
 }

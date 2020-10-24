@@ -1,18 +1,26 @@
 package com.online.shopping.handler;
 
 import com.online.shopping.dto.ApiResponse;
-import com.online.shopping.dto.AuthUserLoginDto;
+import com.online.shopping.dto.UserLoginDto;
 import com.online.shopping.dto.AuthUserOtpDto;
 import com.online.shopping.model.auth.AuthUser;
 import com.online.shopping.model.auth.Role;
 import com.online.shopping.model.auth.Status;
 import com.online.shopping.repository.AuthRepository;
+import com.online.shopping.security.JwtAuthUserCredentials;
+import com.online.shopping.security.SecurityContextRepository;
 import com.online.shopping.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -36,8 +44,11 @@ public class AuthHandler {
 
     private final ReactiveMongoTemplate mongoTemplate;
 
+    private final SecurityContextRepository contextRepository;
+
     public Mono<ServerResponse> login(ServerRequest request) {
-        Mono<AuthUserLoginDto> userLoginDto = request.bodyToMono(AuthUserLoginDto.class);
+        contextRepository.load(request.exchange()).subscribe(System.out::println);
+        Mono<UserLoginDto> userLoginDto = request.bodyToMono(UserLoginDto.class);
         return userLoginDto.flatMap(authUserLoginDto -> authRepository.findByEmail(authUserLoginDto.getEmail())
                 .flatMap(authUser -> {
                     if (bCryptPasswordEncoder.matches(authUserLoginDto.getPassword(), authUser.getPassword())){
@@ -51,8 +62,8 @@ public class AuthHandler {
                                 .badRequest()
                                 .body(BodyInserters.fromValue(new ApiResponse(400, "Invalid credentials", null)));
                     }
-                }).switchIfEmpty(ServerResponse.badRequest()
-                        .body(BodyInserters.fromValue(new ApiResponse(400, "User does not exist", null)))));
+                }).switchIfEmpty(ServerResponse.status(HttpStatus.NOT_FOUND)
+                        .body(BodyInserters.fromValue(new ApiResponse(HttpStatus.NOT_FOUND.value(), "User does not exist", null)))));
     }
 
     public Mono<ServerResponse> signUp(ServerRequest request) {
@@ -95,5 +106,17 @@ public class AuthHandler {
                 })
                 .switchIfEmpty(ServerResponse.badRequest()
                         .body(BodyInserters.fromValue(new ApiResponse(400, "User does not exist", null)))));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public Mono<ServerResponse> user(ServerRequest request) {
+        contextRepository.load(request.exchange()).subscribe(System.out::println);
+        JwtAuthUserCredentials credentials = (JwtAuthUserCredentials) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+
+        System.out.println("Important details " + credentials.toString());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+        return ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(new ApiResponse(200, "Hello", null)));
     }
 }

@@ -15,7 +15,7 @@ import java.util.Collections;
 @EnableReactiveMongoRepositories(basePackages = {"com.online.shopping.repository"})
 public class ReactiveMongoDBConfig extends AbstractMongoClientConfiguration {
 
-// Note : The MongoTemplate bean is defined in the Super Class.
+// Note : The MongoTemplate bean is defined in the Parent Class.
 
     @Override
     protected String getDatabaseName() {
