@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class JwtAuthUserCredentials {
+public class JwtCredentials {
 
     private String userId;
 }

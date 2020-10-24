@@ -31,7 +31,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
             username = null;
         }
         if (username != null && ! tokenProvider.isTokenExpired(authToken)) {
-            JwtAuthUserCredentials jwtCredentials = new JwtAuthUserCredentials();
+            JwtCredentials jwtCredentials = new JwtCredentials();
 
             Claims claims = tokenProvider.getAllClaimsFromToken(authToken);
             List<String> roles = claims.get("authorities", List.class);

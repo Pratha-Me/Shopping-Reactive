@@ -7,7 +7,7 @@ import com.online.shopping.model.auth.AuthUser;
 import com.online.shopping.model.auth.Role;
 import com.online.shopping.model.auth.Status;
 import com.online.shopping.repository.AuthRepository;
-import com.online.shopping.security.JwtAuthUserCredentials;
+import com.online.shopping.security.JwtCredentials;
 import com.online.shopping.security.SecurityContextRepository;
 import com.online.shopping.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -111,9 +107,13 @@ public class AuthHandler {
     @PreAuthorize("hasRole('USER')")
     public Mono<ServerResponse> user(ServerRequest request) {
         contextRepository.load(request.exchange()).subscribe(System.out::println);
-        JwtAuthUserCredentials credentials = (JwtAuthUserCredentials) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 
-        System.out.println("Important details " + credentials.toString());
+        JwtCredentials credentials = (JwtCredentials) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getCredentials();
+
+        System.out.println(credentials.toString());
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
