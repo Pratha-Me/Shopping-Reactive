@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Configuration
-@EnableReactiveMongoRepositories(basePackages = {"com.online.shopping.repository"})
+@EnableReactiveMongoRepositories(basePackages = {"com.online.shopping.repo"})
 public class ReactiveMongoDBConfig extends AbstractReactiveMongoConfiguration {
 
 // Note : The MongoTemplate bean is defined in the Parent Class.

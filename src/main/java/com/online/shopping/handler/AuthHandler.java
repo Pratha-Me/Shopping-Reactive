@@ -6,7 +6,7 @@ import com.online.shopping.dto.UserLoginDto;
 import com.online.shopping.model.auth.AuthUser;
 import com.online.shopping.model.auth.Role;
 import com.online.shopping.model.auth.Status;
-import com.online.shopping.repository.AuthRepository;
+import com.online.shopping.repo.AuthRepository;
 import com.online.shopping.security.JwtCredentials;
 import com.online.shopping.security.SecurityContextRepository;
 import com.online.shopping.security.TokenProvider;

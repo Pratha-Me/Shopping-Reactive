@@ -1,4 +1,4 @@
-package com.online.shopping.repository;
+package com.online.shopping.repo;
 
 import com.online.shopping.model.auth.AuthUser;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
