@@ -2,10 +2,11 @@ package com.online.shopping.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
+import com.mongodb.connection.netty.NettyStreamFactoryFactory;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClients;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableReactiveMongoRepositories(basePackages = {"com.online.shopping.repository"})
-public class ReactiveMongoDBConfig extends AbstractMongoClientConfiguration {
+public class ReactiveMongoDBConfig extends AbstractReactiveMongoConfiguration {
 
 // Note : The MongoTemplate bean is defined in the Parent Class.
 
@@ -23,10 +24,11 @@ public class ReactiveMongoDBConfig extends AbstractMongoClientConfiguration {
     }
 
     @Override
-    public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/shopping");
+    public MongoClient reactiveMongoClient() {
+        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
         MongoClientSettings clientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
+                .streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
                 .build();
         return MongoClients.create(clientSettings);
     }
