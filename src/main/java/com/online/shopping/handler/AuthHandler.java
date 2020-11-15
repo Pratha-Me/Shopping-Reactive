@@ -42,8 +42,10 @@ public class AuthHandler {
 
     private final SecurityContextRepository contextRepository;
 
+    private static final String TOKEN_PREFIX = "Bearer - ";
+
     public Mono<ServerResponse> login(ServerRequest request) {
-        contextRepository.load(request.exchange()).subscribe(System.out::println);
+//        contextRepository.load(request.exchange()).subscribe(System.out::println);
         Mono<UserLoginDto> userLoginDto = request.bodyToMono(UserLoginDto.class);
         return userLoginDto.flatMap(authUserLoginDto -> authRepository.findByEmail(authUserLoginDto.getEmail())
                 .flatMap(authUser -> {
@@ -51,7 +53,7 @@ public class AuthHandler {
                         return ServerResponse
                                 .ok()
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, tokenProvider.generateToken(authUser))
+                                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + tokenProvider.generateToken(authUser))
                                 .body(BodyInserters.fromValue(new ApiResponse(200, "Login Successful", null)));
                     } else {
                         return ServerResponse
@@ -104,7 +106,7 @@ public class AuthHandler {
                         .body(BodyInserters.fromValue(new ApiResponse(400, "User does not exist", null)))));
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Mono<ServerResponse> user(ServerRequest request) {
         contextRepository.load(request.exchange()).subscribe(System.out::println);
 
