@@ -1,4 +1,4 @@
-package com.online.shopping.config.router;
+package com.online.shopping.router;
 
 import com.online.shopping.handler.AuthHandler;
 import lombok.RequiredArgsConstructor;
