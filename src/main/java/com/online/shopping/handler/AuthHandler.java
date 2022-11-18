@@ -54,7 +54,7 @@ public class AuthHandler {
                                 .ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + tokenProvider.generateToken(authUser))
-                                .body(BodyInserters.fromValue(new ApiResponse(200, "Login Successful", null)));
+                                .body(BodyInserters.fromValue(new ApiResponse(200, "Login Successful", tokenProvider.generateToken(authUser))));
                     } else {
                         return ServerResponse
                                 .badRequest()
@@ -108,8 +108,6 @@ public class AuthHandler {
 
     @PreAuthorize("hasRole('ADMIN')")
     public Mono<ServerResponse> user(ServerRequest request) {
-        contextRepository.load(request.exchange()).subscribe(System.out::println);
-
         JwtCredentials credentials = (JwtCredentials) SecurityContextHolder
                 .getContext()
                 .getAuthentication()

@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
-        String[] patterns = new String[]{"/auth/**", "/users"};
+        String[] patterns = new String[]{"/auth/signup", "/auth/login"};
         return http.cors().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint((swe, e) -> Mono.fromRunnable(() -> {
@@ -37,8 +37,6 @@ public class SecurityConfig {
                 })).accessDeniedHandler((swe, e) -> Mono.fromRunnable(() -> {
                     swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 })).and()
-                .csrf().disable()
-                .httpBasic().disable()
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
@@ -46,6 +44,8 @@ public class SecurityConfig {
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyExchange().authenticated()
                 .and()
+                .csrf().disable()
+                .httpBasic().disable()
                 .build();
     }
 }

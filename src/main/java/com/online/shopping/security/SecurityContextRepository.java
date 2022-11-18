@@ -1,5 +1,6 @@
 package com.online.shopping.security;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,14 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityContextRepository implements ServerSecurityContextRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityContextRepository.class);
 
     private static final String TOKEN_PREFIX = "Bearer - ";
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public Mono<Void> save(ServerWebExchange swe, SecurityContext sc) {
@@ -41,7 +42,8 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         }
         if (authToken != null) {
             Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
-            return this.authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
+
+            return authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
         } else {
             return Mono.empty();
         }
