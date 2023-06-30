@@ -3,7 +3,6 @@ package com.online.shopping.security;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +20,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityContextRepository.class);
 
-    private static final String TOKEN_PREFIX = "Bearer - ";
+    private static final String TOKEN_PREFIX = "Bearer ";
 
     private final AuthenticationManager authenticationManager;
 
@@ -37,7 +36,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         String authToken = null;
         if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) {
             authToken = authHeader.replace(TOKEN_PREFIX, "");
-        }else {
+        } else {
             logger.warn("couldn't find bearer string, will ignore the header.");
         }
         if (authToken != null) {

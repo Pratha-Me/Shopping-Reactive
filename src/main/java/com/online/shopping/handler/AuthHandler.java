@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -110,8 +111,8 @@ public class AuthHandler {
     public Mono<ServerResponse> user(ServerRequest request) {
         JwtCredentials credentials = (JwtCredentials) SecurityContextHolder
                 .getContext()
-                .getAuthentication()
-                .getCredentials();
+                .getAuthentication();
+//                .getCredentials();
 
         System.out.println(credentials.toString());
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
